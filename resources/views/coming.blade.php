@@ -81,7 +81,7 @@
           <div class="col-md-7">
             <div class="copyright wow fadeInLeft" data-wow-delay=".2s">
               <p>Upcoming Product <a href="#" rel="nofollow">FeelDeal</a></p>
-              <p>Developed by <a href="#" rel="nofollow">Bappy</a></p>
+              <p>Developed by <a href="#" rel="nofollow">bbbbbb</a></p>
             </div>
           </div>
           <div class="col-md-5">
