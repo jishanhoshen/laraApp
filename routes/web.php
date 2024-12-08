@@ -13,3 +13,4 @@ Route::prefix('users')->group(function () {
     Route::get('/update/{name}/{phone}/{pin}/{id}', [UserController::class, 'update']);
     Route::get('/delete/{id}', [UserController::class, 'delete']);
 });
+Route::get('/bappy',function(){return view('bappy');});
