@@ -12,9 +12,6 @@ Route::prefix('v1')->group(function () {
 });
 
 
-
-
-
 // Route::prefix('v1')->group(function () {
 //     Route::prefix('auth')->group(function () {
 //         Route::post('dashboard', 'AuthController@dashboard'); // api/v1/auth/dashboard

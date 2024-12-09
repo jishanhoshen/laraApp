@@ -1,16 +1,25 @@
 <?php
 
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\ClientsController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('coming');
 });
 
-Route::prefix('users')->group(function () {
-    Route::get('/', [UserController::class, 'index']);
-    Route::get('/create/{name}/{phone}/{pin}', [UserController::class, 'create']);
-    Route::get('/update/{name}/{phone}/{pin}/{id}', [UserController::class, 'update']);
-    Route::get('/delete/{id}', [UserController::class, 'delete']);
+Route::get('/dashboard', [ClientsController::class, 'list'])->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/clients', [ClientsController::class, 'list'])->name('clients.list');
+    Route::get('/clients/{id}', [ClientsController::class, 'show'])->name('clients.show');
+    Route::post('/clients', [ClientsController::class, 'store'])->name('clients.create');
+    Route::put('/clients/{id}', [ClientsController::class, 'update'])->name('clients.update');
+    Route::delete('/clients/{id}', [ClientsController::class, 'destroy'])->name('clients.destroy');
 });
-Route::get('/bappy',function(){return view('bappy');});
+
+require __DIR__.'/auth.php';
