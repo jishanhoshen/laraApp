@@ -13,23 +13,17 @@
                     <button type="button" onclick="openModal()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Add Client</button>
                 </div>
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <table class="table-fixed w-full">
-                        <thead>
+                    <table id="{{ $dataTable->getTableAttribute('id') }}" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
-                                <th class="px-4 py-2">ID</th>
-                                <th class="px-4 py-2">Name</th>
-                                <th class="px-4 py-2">Phone</th>
+                                @foreach($dataTable->collection as $item)
+                                <th class="px-6 py-3 !text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                                    {{ __($item->title) }}
+                                </th>
+                                @endforeach
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($clients as $client)
-                            <tr>
-                                <td class="border px-4 py-2">{{ $client->id }}</td>
-                                <td class="border px-4 py-2">{{ $client->name }}</td>
-                                <td class="border px-4 py-2">{{ $client->phone }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
                     </table>
                 </div>
             </div>
@@ -37,49 +31,133 @@
     </div>
 
 
-    <!-- Main modal -->
-    <div id="client-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-        <div class="relative p-4 w-full max-w-2xl max-h-full">
-            <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                <!-- Modal header -->
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        Static modal
-                    </h3>
-                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="static-modal">
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                        </svg>
-                        <span class="sr-only">Close modal</span>
-                    </button>
-                </div>
-                <!-- Modal body -->
-                <div class="p-4 md:p-5 space-y-4">
-                    <form class="p-4 md:p-5">
-                        <div class="grid gap-4 mb-4 grid-cols-2">
-                            <div class="col-span-2">
-                                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                                <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required="">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <!-- Modal footer -->
-                <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                    <button data-modal-hide="static-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button>
-                    <button data-modal-hide="static-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
+    @include('modal')
     @push('scripts')
-    <script>
-        function openModal() {
-            const modal = document.getElementById('client-modal');
-            modal.classList.remove('hidden');
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+    <script type="module">
+        const $static_modal = document.getElementById('static-modal');
+        const staticModal = new Modal($static_modal, {
+            backdrop: 'static',
+        });
+
+        window.openModal = function($id = null) {
+            let modalTitle = $('#static-modal #modal-title');
+            let modalInputName = $('#static-modal #name');
+            // let modalInputEmail = $('#static-modal #email');
+            let modalInputPhone = $('#static-modal #phone');
+            let modalInputPin = $('#static-modal #pin');
+            let submitBtn = $('#static-modal #submitBtn');
+
+            if ($id) {
+                axios.get('/system/user/edit/' + $id)
+                    .then(response => {
+                        console.log(response.data.name);
+                        modalTitle.text('Update User');
+                        modalInputName.focus();
+                        modalInputName.val(response.data.name);
+                        modalInputEmail.val(response.data.email);
+                        submitBtn.text('Update');
+                        submitBtn.attr('onclick', 'event.preventDefault();submitForm(' + response.data.id + ')');
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            }
+            staticModal.show();
+            modalTitle.text('Add Client');
+            modalInputName.val('');
+            // modalInputEmail.val('');
+            modalInputPhone.val('');
+            modalInputPin.val('');
+            modalInputName.focus();
+            submitBtn.text('Save');
+
+        }
+
+        window.submitForm = function($id = null) {
+            var form = $('#userForm');
+            if ($id) {
+                axios.post('/clients/' + $id, $(form).serialize())
+                    .then(response => {
+                        if (response.data.status) {
+                            staticModal.hide();
+
+                            let relode = $('#users-table').DataTable();
+                            relode.ajax.reload();
+
+                        } else {
+                            var keys = Object.keys(response.data.errors);
+                            console.log(keys);
+
+                            keys.forEach(function(d) {
+                                $('#' + d).addClass('is-invalid');
+                                $('#' + d + '_msg').text(response.data.errors[d][0]);
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        // console.log(error);
+
+                    });
+            } else {
+                axios.post('/clients/store', $(form).serialize())
+                    .then(response => {
+                        if (response.data.status) {
+                            staticModal.hide();
+                            // toastr.success(response.data.message);
+
+                            let relode = $('#users-table').DataTable();
+                            relode.ajax.reload();
+
+                        } else {
+                            var keys = Object.keys(response.data.errors);
+                            console.log(keys);
+
+                            keys.forEach(function(d) {
+                                $('#' + d).addClass('is-invalid');
+                                $('#' + d + '_msg').text(response.data.errors[d][0]);
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        // console.log(error);
+
+                    });
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.altKey && event.shiftKey && event.key === 'N') {
+                // Prevent default action if necessary
+                event.preventDefault();
+
+                openModal();
+            }
+        });
+
+        window.confirmDelete = function($id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.delete('/system/user/delete/' + $id)
+                        .then(response => {
+                            if (response.data.status) {
+                                let relode = $('#users-table').DataTable();
+                                relode.ajax.reload();
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                }
+            })
         }
     </script>
     @endpush

@@ -8,4 +8,9 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    build: {
+        rollupOptions: {
+            external: ['datatables.net-dt/css/jquery.dataTables.min.css'], // Treat CSS as external
+        },
+    },
 });
