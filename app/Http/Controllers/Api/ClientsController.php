@@ -15,7 +15,7 @@ class ClientsController extends Controller
      */
     public function index(ClientsDataTable $dataTable)
     {
-        return $dataTable->render('dashboard');
+        return $dataTable->render('client');
     }
 
     /**
@@ -55,7 +55,8 @@ class ClientsController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $client = Client::find($id);
+        return response()->json($client);
     }
 
     /**
@@ -87,7 +88,12 @@ class ClientsController extends Controller
         $client->phone = $request->phone;
         $client->pin = $request->pin;
         $client->save();
-        return response()->json($client);
+        return response()->json(
+            [
+                'message' => 'Client updated successfully',
+                'status' => true
+            ]
+        );
     }
 
     /**
@@ -95,6 +101,21 @@ class ClientsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        if ($client = Client::find($id)) {
+            $client->delete();
+            return response()->json(
+                [
+                    'message' => 'Client deleted successfully',
+                    'status' => true
+                ]
+            );
+        }
+
+        return response()->json(
+            [
+                'message' => 'Client not found',
+                'status' => false
+            ]
+        );
     }
 }

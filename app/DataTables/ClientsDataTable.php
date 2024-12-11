@@ -46,7 +46,7 @@ class ClientsDataTable extends DataTable
             ->columns($this->getColumns())
             ->minifiedAjax()
             //->dom('Bfrtip')
-            ->orderBy(1)
+            ->orderBy(0)
             ->selectStyleSingle()
             ->buttons([
                 Button::make('excel'),
@@ -65,11 +65,12 @@ class ClientsDataTable extends DataTable
     {
         return [
             Column::make('id')
-            ->title('ID')
-            ->width(50)
-            ->addClass('!text-center'),
+                ->title('ID')
+                ->width(50)
+                ->addClass('!text-center'),
             Column::make('name')->title('Full Name'),
-            Column::make('phone')->title('Phone'),
+            Column::make('phone')
+                ->addClass('!text-left')->title('Phone'),
             // Column::make('created_at'),
             // Column::make('updated_at'),
             Column::computed('action')
